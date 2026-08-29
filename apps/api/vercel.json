@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../.. && npm install && npm run build -w packages/db",
-  "installCommand": "npm install --prefix ../..",
   "framework": null,
+  "installCommand": "cd ../.. && npm install",
+  "buildCommand": "cd ../.. && npm run build -w packages/db",
+  "outputDirectory": "public",
   "functions": {
     "api/index.ts": { "maxDuration": 60 }
   },
