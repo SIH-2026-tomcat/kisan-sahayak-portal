@@ -1,4 +1,5 @@
 import { getAreasByPincode, getOpenSlots } from "@/lib/api";
+import SlotCard from "@/components/SlotCard";
 
 export const dynamic = "force-dynamic";
 
@@ -35,26 +36,7 @@ export default async function HomePage() {
         ) : (
           <div className="space-y-3">
             {slotsData.items.map((slot: any) => (
-              <div
-                key={slot.id}
-                className="border border-gov-border rounded-md p-3 hover:border-gov-green-700"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gov-ink">
-                      {slot.startTime} - {slot.endTime}
-                    </p>
-                    <p className="text-sm text-gov-muted">{slot.centre.name}</p>
-                    <p className="text-sm text-gov-muted">{slot.centre.address}</p>
-                  </div>
-                  <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gov-green-100 text-gov-green-900">
-                    {slot.capacity - slot.bookedCount} left
-                  </span>
-                </div>
-                <button className="mt-3 w-full bg-gov-green-800 text-white py-2 rounded-md text-sm font-medium hover:bg-gov-green-900">
-                  Book this slot
-                </button>
-              </div>
+              <SlotCard key={slot.id} slot={slot} />
             ))}
           </div>
         )}

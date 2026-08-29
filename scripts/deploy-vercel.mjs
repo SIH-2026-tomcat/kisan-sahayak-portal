@@ -10,6 +10,8 @@ if (!VERCEL_TOKEN) {
 
 const PUBLIC_API_URL = process.env.PUBLIC_API_URL || "https://kisan-sahayak-api.onrender.com";
 
+const DUMMY_MODE = process.env.DUMMY_MODE || "true";
+
 const args = [
   "vercel",
   "--yes",
@@ -18,8 +20,12 @@ const args = [
   "--prod",
   "--build-env",
   `PUBLIC_API_URL=${PUBLIC_API_URL}`,
+  "--build-env",
+  `DUMMY_MODE=${DUMMY_MODE}`,
   "--env",
   `PUBLIC_API_URL=${PUBLIC_API_URL}`,
+  "--env",
+  `DUMMY_MODE=${DUMMY_MODE}`,
 ];
 
 console.log(`Deploying web to Vercel with PUBLIC_API_URL=${PUBLIC_API_URL}...`);
