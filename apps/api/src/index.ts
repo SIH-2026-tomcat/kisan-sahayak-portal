@@ -1,6 +1,7 @@
 import "./config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import multipart from "@fastify/multipart";
 import { env } from "./config";
 import { db, serviceAreas, areaPincodes, centres, centreAreaMap, slots, procurementWindows } from "@kisan/db";
 import { eq, and, inArray, gt, lte, sql } from "drizzle-orm";
@@ -17,6 +18,8 @@ await app.register(cors, {
   origin: env.PUBLIC_APP_URL,
   credentials: true,
 });
+
+await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } });
 
 await app.register(authProxy);
 await app.register(farmers);

@@ -1,10 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
 import { z } from "zod";
+import crypto from "crypto";
 import { db } from "@kisan/db";
 import { farmerProfiles, users, serviceAreas, areaPincodes } from "@kisan/db";
 import { eq, and } from "drizzle-orm";
 import { requireAuth } from "../plugins/auth.js";
+import { uploadAadhaarDocument } from "../lib/cloudinary.js";
 
 const profileSchema = z.object({
   fullName: z.string().min(1),
@@ -85,6 +87,55 @@ const farmers: FastifyPluginAsync = async (app: FastifyInstance) => {
       .returning();
 
     return { profile: created, serviceAreaId };
+  });
+
+  app.post("/farmers/aadhaar-document", { preHandler: [requireAuth] }, async (request, reply) => {
+    const userId = request.user!.id;
+    let fileBuffer: Buffer | undefined;
+    let originalName = "document.pdf";
+    let aadhaarNumber = "";
+
+    for await (const part of request.parts()) {
+      if (part.type === "file" && part.fieldname === "document") {
+        fileBuffer = await part.toBuffer();
+        originalName = part.filename ?? originalName;
+      } else if (part.type === "field" && part.fieldname === "aadhaarNumber") {
+        aadhaarNumber = String(part.value);
+      }
+    }
+
+    if (!fileBuffer) {
+      return reply.status(400).send({ error: "MissingFile", message: "Aadhaar document file is required." });
+    }
+
+    if (!aadhaarNumber || aadhaarNumber.length < 12) {
+      return reply.status(400).send({ error: "InvalidAadhaar", message: "A valid Aadhaar number is required." });
+    }
+
+    try {
+      const { publicId } = await uploadAadhaarDocument(userId, fileBuffer, originalName);
+      const aadhaarRef = crypto.createHash("sha256").update(aadhaarNumber).digest("hex");
+      const aadhaarLast4 = aadhaarNumber.slice(-4);
+
+      const [updated] = await db
+        .update(farmerProfiles)
+        .set({
+          aadhaarRef,
+          aadhaarLast4,
+          aadhaarDocumentId: publicId,
+          updatedAt: new Date(),
+        })
+        .where(eq(farmerProfiles.userId, userId))
+        .returning();
+
+      return { documentId: publicId, aadhaarLast4, updated };
+    } catch (err) {
+      request.log.error(err);
+      return reply.status(500).send({
+        error: "UploadFailed",
+        message: "Could not upload the document. Please try again.",
+      });
+    }
   });
 };
 
