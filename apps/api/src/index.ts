@@ -4,6 +4,9 @@ import cors from "@fastify/cors";
 import { env } from "./config";
 import { db, serviceAreas, areaPincodes, centres, centreAreaMap, slots, procurementWindows } from "@kisan/db";
 import { eq, and, inArray, gt, lte, sql } from "drizzle-orm";
+import authProxy from "./plugins/auth.js";
+import farmers from "./routes/farmers.js";
+import bookingsRoute from "./routes/bookings.js";
 
 const app = Fastify({
   logger: true,
@@ -13,6 +16,10 @@ await app.register(cors, {
   origin: env.PUBLIC_APP_URL,
   credentials: true,
 });
+
+await app.register(authProxy);
+await app.register(farmers);
+await app.register(bookingsRoute);
 
 app.get("/health", async () => {
   return { status: "ok", env: env.PUBLIC_APP_URL };

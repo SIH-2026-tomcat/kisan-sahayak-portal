@@ -11,11 +11,14 @@ const envSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   PUBLIC_APP_URL: z.string().default("http://localhost:3000"),
   AUTH_SECRET: z.string().min(1),
-  RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().email().optional(),
-  CLOUDINARY_CLOUD_NAME: z.string().optional(),
-  CLOUDINARY_API_KEY: z.string().optional(),
-  CLOUDINARY_API_SECRET: z.string().optional(),
+  RESEND_API_KEY: z.union([z.string().min(1), z.literal("")]).optional(),
+  EMAIL_FROM: z.union([z.string().email(), z.literal("")]).optional(),
+  EMAIL_REPLY_TO: z.union([z.string().email(), z.literal("")]).optional(),
+  ADMIN_EMAIL: z.union([z.string().email(), z.literal("")]).optional(),
+  CLOUDINARY_CLOUD_NAME: z.union([z.string().min(1), z.literal("")]).optional(),
+  CLOUDINARY_API_KEY: z.union([z.string().min(1), z.literal("")]).optional(),
+  CLOUDINARY_API_SECRET: z.union([z.string().min(1), z.literal("")]).optional(),
+  CLOUDINARY_AADHAAR_FOLDER: z.string().optional().default("aadhaar_docs"),
 });
 
 export const env = envSchema.parse(process.env);
