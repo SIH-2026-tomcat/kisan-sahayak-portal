@@ -1,6 +1,0 @@
-Add Playwright e2e tests and Neon auth retry.
-
-- Add Playwright config for Chromium + mobile
-- Add e2e tests for home, booking flow and parallel slot booking
-- Make users.mobile nullable until profile completed
-- Retry 429 rate-limit errors from Neon auth
