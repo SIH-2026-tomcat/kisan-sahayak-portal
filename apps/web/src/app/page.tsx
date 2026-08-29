@@ -1,5 +1,7 @@
 import { getAreasByPincode, getOpenSlots } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const pincode = "754211";
   const areaData = await getAreasByPincode(pincode);

@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config } from "dotenv";
-config({ path: "../../.env.local" });
+config({ path: "../../../.env.local" });
 
 const baseURL = process.env.PUBLIC_APP_URL || "http://localhost:3002";
 

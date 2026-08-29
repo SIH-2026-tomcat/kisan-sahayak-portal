@@ -1,0 +1,5 @@
+Add Render/Vercel deploy scripts and fix build config.
+
+- Move Playwright config into e2e/ and exclude it from Next.js build
+- Make homepage force-dynamic so it fetches live API data
+- Add scripts/deploy-render.mjs and scripts/deploy-vercel.mjs
