@@ -2,9 +2,19 @@ import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { db, serviceAreas, areaPincodes, centres, centreAreaMap, slots, procurementWindows } from "@kisan/db";
 import { and, eq, inArray } from "drizzle-orm";
-import { lookupPincode } from "../lib/pincode.js";
+import { lookupPincode, resolvePincode } from "../lib/pincode.js";
 
 const catalog: FastifyPluginAsync = async (app) => {
+  // pure pincode -> state / district lookup (India Post, offline fallback)
+  app.get("/geo/pincode/:pincode", async (request, reply) => {
+    const parsed = z.object({ pincode: z.string().regex(/^\d{6}$/) }).safeParse(request.params);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: "InvalidPincode", message: "Enter a valid 6-digit pincode." });
+    }
+    const geo = await resolvePincode(parsed.data.pincode);
+    return { pincode: parsed.data.pincode, ...geo };
+  });
+
   // pincode -> service area + eligible centres
   app.get("/areas/by-pincode/:pincode", async (request, reply) => {
     const { pincode } = z.object({ pincode: z.string().regex(/^\d{6}$/) }).parse(request.params);
@@ -17,12 +27,14 @@ const catalog: FastifyPluginAsync = async (app) => {
       .limit(1);
 
     if (!area) {
-      const guess = lookupPincode(pincode);
+      const guess = lookupPincode(pincode) ?? undefined;
+      const geo = await resolvePincode(pincode);
       return reply.status(404).send({
         error: "PincodeNotCovered",
         message:
           "We do not have centre coverage mapped for this pincode yet. You can continue registration, but slot booking may not be available until an eligible centre is configured.",
         suggestion: guess,
+        location: geo.source === "none" ? undefined : { state: geo.state, district: geo.district, source: geo.source },
       });
     }
 

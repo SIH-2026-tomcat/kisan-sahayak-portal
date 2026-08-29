@@ -39,6 +39,59 @@
   .badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium; }
 }
 
+@layer components {
+  /* Government of India tricolour accent strip */
+  .tricolour-strip {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(
+      to right,
+      #FF9933 0%, #FF9933 33.33%,
+      #ffffff 33.33%, #ffffff 66.66%,
+      #138808 66.66%, #138808 100%
+    );
+  }
+  .gov-topbar {
+    @apply bg-green-900 text-white text-xs;
+  }
+  .gov-topbar a { @apply text-white/90 no-underline hover:text-white hover:underline; }
+}
+
+/* Waving national flag + rotating Ashoka Chakra, bottom-right */
+.flag-ribbon {
+  position: fixed;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 30;
+  pointer-events: none;
+  width: 132px;
+  filter: drop-shadow(0 6px 14px rgba(16, 24, 40, 0.28));
+}
+.flag-ribbon__cloth {
+  transform-origin: left center;
+  animation: flag-wave 3.2s ease-in-out infinite;
+}
+.flag-ribbon__chakra {
+  animation: chakra-spin 14s linear infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes flag-wave {
+  0%, 100% { transform: perspective(340px) rotateY(0deg) skewY(0deg); }
+  25% { transform: perspective(340px) rotateY(-8deg) skewY(1.4deg); }
+  50% { transform: perspective(340px) rotateY(0deg) skewY(0deg); }
+  75% { transform: perspective(340px) rotateY(8deg) skewY(-1.4deg); }
+}
+@keyframes chakra-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .flag-ribbon { width: 84px; right: 0.4rem; bottom: 0.5rem; opacity: 0.9; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .flag-ribbon__cloth { animation: none; }
+  .flag-ribbon__chakra { animation: none; }
 }

@@ -22,6 +22,13 @@ const config: Config = {
           600: "#E88A1A",
           700: "#C9760F",
         },
+        // Indian national flag (accents, ribbons, chakra)
+        flag: {
+          saffron: "#FF9933",
+          white: "#FFFFFF",
+          green: "#138808",
+          navy: "#000080",
+        },
         paper: "#F7F4ED",
         ink: "#22271F",
         muted: "#5B6560",

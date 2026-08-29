@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import { api, ApiError } from "@/lib/api";
 import { PublicShell } from "@/components/PublicShell";
-import { Card, Field, Button, Stepper, Banner } from "@/components/ui";
+import { Card, Field, Button, Stepper, Banner, cx } from "@/components/ui";
 import { useToast } from "@/components/Toast";
 import { useT } from "@/i18n/I18nProvider";
 
@@ -30,6 +30,8 @@ export default function RegisterPage() {
   // step 2
   const [addr, setAddr] = useState({ addressLine1: "", addressLine2: "", village: "", district: "", state: "", pincode: "" });
   const [areaInfo, setAreaInfo] = useState<{ found: boolean; message: string } | null>(null);
+  const [geoBusy, setGeoBusy] = useState(false);
+  const [geoLocked, setGeoLocked] = useState(false);
 
   // step 3
   const [aadhaar, setAadhaar] = useState("");
@@ -82,17 +84,46 @@ export default function RegisterPage() {
   }
 
   async function checkPincode() {
-    if (!/^\d{6}$/.test(addr.pincode)) return;
+    if (!/^\d{6}$/.test(addr.pincode)) {
+      setAreaInfo(null);
+      return;
+    }
+    setGeoBusy(true);
     try {
-      const d = await api.get<any>(`areas/by-pincode/${addr.pincode}`);
-      setAreaInfo({ found: true, message: t("register.serviceAreaFound", { district: d.serviceArea.district }) });
-      setAddr((a) => ({ ...a, district: d.serviceArea.district, state: d.serviceArea.state }));
-    } catch (e) {
-      const err = e as ApiError;
-      setAreaInfo({ found: false, message: err.status === 404 ? t("register.serviceAreaMissing") : err.message });
-      if ((err as any).body?.suggestion) {
-        setAddr((a) => ({ ...a, district: (err as any).body.suggestion.district, state: (err as any).body.suggestion.state }));
+      // 1) resolve state + district from the pincode
+      try {
+        const g = await api.get<{ state: string; district: string; source: string }>(`geo/pincode/${addr.pincode}`);
+        if (g.state && g.district) {
+          setAddr((a) => ({ ...a, district: g.district, state: g.state }));
+          setGeoLocked(true);
+        } else {
+          setGeoLocked(false);
+        }
+      } catch {
+        setGeoLocked(false);
       }
+
+      // 2) check whether a procurement service area covers this pincode
+      try {
+        const d = await api.get<any>(`areas/by-pincode/${addr.pincode}`);
+        setAreaInfo({ found: true, message: t("register.serviceAreaFound", { district: d.serviceArea.district }) });
+        setAddr((a) => ({ ...a, district: d.serviceArea.district, state: d.serviceArea.state }));
+        setGeoLocked(true);
+      } catch (e) {
+        const err = e as ApiError;
+        if (err.status === 404) {
+          setAreaInfo({ found: false, message: t("register.serviceAreaMissing") });
+          const loc = err.body?.location;
+          if (loc?.district) {
+            setAddr((a) => ({ ...a, district: loc.district, state: loc.state }));
+            setGeoLocked(true);
+          }
+        } else {
+          setAreaInfo({ found: false, message: err.message });
+        }
+      }
+    } finally {
+      setGeoBusy(false);
     }
   }
 
@@ -212,15 +243,55 @@ export default function RegisterPage() {
               <Field label={t("register.village")} htmlFor="vl">
                 <input id="vl" className="input" value={addr.village} onChange={(e) => setAddr({ ...addr, village: e.target.value })} />
               </Field>
-              <Field label={t("register.pincode")} htmlFor="pc">
-                <input id="pc" className="input" inputMode="numeric" maxLength={6} value={addr.pincode}
-                  onChange={(e) => setAddr({ ...addr, pincode: e.target.value })} onBlur={checkPincode} required />
+              <Field label={t("register.pincode")} help={t("register.pincodeHint")} htmlFor="pc">
+                <input
+                  id="pc"
+                  className="input"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={addr.pincode}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setGeoLocked(false);
+                    setAddr({ ...addr, pincode: v });
+                    if (v.length === 6) void checkPincode();
+                  }}
+                  onBlur={checkPincode}
+                  required
+                />
               </Field>
+              {geoBusy && <p className="mb-2 text-sm text-muted">{t("register.pincodeLooking")}</p>}
               {areaInfo && <div className="mb-3"><Banner tone={areaInfo.found ? "success" : "warning"}>{areaInfo.message}</Banner></div>}
               <div className="grid grid-cols-2 gap-2">
-                <Field label={t("register.district")} htmlFor="ds"><input id="ds" className="input" value={addr.district} onChange={(e) => setAddr({ ...addr, district: e.target.value })} required /></Field>
-                <Field label={t("register.state")} htmlFor="st"><input id="st" className="input" value={addr.state} onChange={(e) => setAddr({ ...addr, state: e.target.value })} required /></Field>
+                <Field label={t("register.district")} htmlFor="ds">
+                  <input
+                    id="ds"
+                    className={cx("input", geoLocked && "bg-paper text-muted")}
+                    value={addr.district}
+                    readOnly={geoLocked}
+                    onChange={(e) => setAddr({ ...addr, district: e.target.value })}
+                    required
+                  />
+                </Field>
+                <Field label={t("register.state")} htmlFor="st">
+                  <input
+                    id="st"
+                    className={cx("input", geoLocked && "bg-paper text-muted")}
+                    value={addr.state}
+                    readOnly={geoLocked}
+                    onChange={(e) => setAddr({ ...addr, state: e.target.value })}
+                    required
+                  />
+                </Field>
               </div>
+              {geoLocked ? (
+                <p className="-mt-2 mb-3 text-xs text-muted">
+                  {t("register.geoAuto")}{" "}
+                  <button type="button" className="font-medium text-link underline" onClick={() => setGeoLocked(false)}>
+                    {t("register.geoEdit")}
+                  </button>
+                </p>
+              ) : null}
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(0)}>{t("common.back")}</Button>
                 <Button className="flex-1" disabled={!addr.addressLine1 || !/^\d{6}$/.test(addr.pincode) || !addr.district} onClick={() => setStep(2)}>{t("common.next")}</Button>
