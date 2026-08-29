@@ -10,6 +10,7 @@ const envSchema = z.object({
   PORT: z.string().default("3001"),
   HOST: z.string().default("0.0.0.0"),
   PUBLIC_APP_URL: z.string().default("http://localhost:3000"),
+  PUBLIC_API_URL: z.string().url().default("http://localhost:3001"),
   AUTH_SECRET: z.string().min(1),
   RESEND_API_KEY: z.union([z.string().min(1), z.literal("")]).optional(),
   EMAIL_FROM: z.union([z.string().email(), z.literal("")]).optional(),

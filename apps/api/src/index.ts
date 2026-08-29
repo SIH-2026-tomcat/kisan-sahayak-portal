@@ -7,6 +7,7 @@ import { eq, and, inArray, gt, lte, sql } from "drizzle-orm";
 import authProxy from "./plugins/auth.js";
 import farmers from "./routes/farmers.js";
 import bookingsRoute from "./routes/bookings.js";
+import webhooksRoute from "./routes/webhooks.js";
 
 const app = Fastify({
   logger: true,
@@ -20,6 +21,7 @@ await app.register(cors, {
 await app.register(authProxy);
 await app.register(farmers);
 await app.register(bookingsRoute);
+await app.register(webhooksRoute);
 
 app.get("/health", async () => {
   return { status: "ok", env: env.PUBLIC_APP_URL };
