@@ -85,7 +85,7 @@ export const users = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     externalAuthId: text("external_auth_id").unique(),
     email: varchar("email", { length: 255 }).notNull().unique(),
-    mobile: varchar("mobile", { length: 15 }).notNull().unique(),
+    mobile: varchar("mobile", { length: 15 }).unique(),
     role: userRoleEnum("role").notNull().default("farmer"),
     language: languageEnum("language").notNull().default("en"),
     emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),

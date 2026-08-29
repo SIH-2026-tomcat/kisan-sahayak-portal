@@ -39,23 +39,36 @@ async function signToken(payload: { sub: string; email: string; role: string }) 
     .sign(secret);
 }
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function neonFetch(path: string, body: unknown) {
-  const res = await fetch(`${env.NEON_AUTH_URL}/${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Origin: env.PUBLIC_APP_URL,
-    },
-    body: JSON.stringify(body),
-  });
-  const data = (await res.json()) as { user?: { id: string; email: string; name?: string }; token?: string; message?: string; code?: string };
-  if (!res.ok) {
-    const err = new Error(data.message || `Neon auth ${path} failed`);
-    (err as Error & { statusCode: number; code?: string }).statusCode = res.status;
-    (err as Error & { code?: string }).code = data.code;
-    throw err;
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(`${env.NEON_AUTH_URL}/${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: env.PUBLIC_APP_URL,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = (await res.json()) as { user?: { id: string; email: string; name?: string }; token?: string; message?: string; code?: string };
+    if (res.ok) {
+      return data;
+    }
+    lastError = new Error(data.message || `Neon auth ${path} failed`);
+    (lastError as Error & { statusCode: number; code?: string }).statusCode = res.status;
+    (lastError as Error & { code?: string }).code = data.code;
+    if (res.status === 429) {
+      await sleep(300 * (attempt + 1));
+      continue;
+    }
+    throw lastError;
   }
-  return data;
+  throw lastError!;
 }
 
 async function syncUserToDb(neonUser: { id: string; email: string; name?: string | null }) {
@@ -83,7 +96,7 @@ async function syncUserToDb(neonUser: { id: string; email: string; name?: string
     .values({
       externalAuthId: neonUser.id,
       email: neonUser.email,
-      mobile: "",
+      mobile: null,
       role,
       language: "en",
       emailVerifiedAt: new Date(),
