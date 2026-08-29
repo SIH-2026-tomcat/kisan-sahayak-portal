@@ -1,1 +1,0 @@
-Add dummy mode, Vercel public access and client slot booking.
