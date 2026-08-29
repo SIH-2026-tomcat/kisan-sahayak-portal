@@ -6,6 +6,7 @@ import { useState } from "react";
 import { GovMark } from "@/components/GovMark";
 import { SignOutButton } from "@/components/SignOutButton";
 import { RealtimeBanner } from "@/components/admin/RealtimeBanner";
+import { FlagRibbon } from "@/components/national/FlagRibbon";
 import { useT } from "@/i18n/I18nProvider";
 import { cx } from "@/components/ui";
 
@@ -29,6 +30,7 @@ export function AdminShell({ email, children }: { email: string; children: React
   return (
     <div className="min-h-screen bg-paper md:grid md:grid-cols-[240px_1fr]">
       <aside className="hidden md:flex flex-col border-r border-line bg-white">
+        <div className="tricolour-strip" />
         <div className="p-4 border-b border-line"><GovMark /></div>
         <nav className="flex-1 p-2 space-y-0.5">
           {NAV.map(([href, key]) => (
@@ -57,6 +59,7 @@ export function AdminShell({ email, children }: { email: string; children: React
           <GovMark variant="compact" />
           <button className="btn-text" onClick={() => setOpen((o) => !o)}>☰</button>
         </header>
+        <div className="tricolour-strip md:hidden" />
         {open && (
           <div className="md:hidden border-b border-line bg-white p-2 space-y-0.5">
             {NAV.map(([href, key]) => (
@@ -70,6 +73,7 @@ export function AdminShell({ email, children }: { email: string; children: React
         <div className="px-4 pt-3"><RealtimeBanner /></div>
         <main className="flex-1 p-4">{children}</main>
       </div>
+      <FlagRibbon className="hidden sm:block" />
     </div>
   );
 }

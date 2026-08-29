@@ -11,7 +11,9 @@ export default function AboutPage() {
         <h1 className="text-2xl font-bold">{t("about.title")}</h1>
         <div className="mt-4 space-y-4 text-ink">
           <Card>
-            <p className="text-sm text-muted">{t("brand.ministry")}</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gov/doca-lockup.png" alt="Department of Consumer Affairs" className="h-12 w-auto" />
+            <p className="mt-3 text-sm text-muted">{t("brand.ministry")}</p>
             <p className="text-sm text-muted">{t("brand.department")}</p>
           </Card>
           <p>{t("about.body")}</p>

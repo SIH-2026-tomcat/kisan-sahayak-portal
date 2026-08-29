@@ -1,7 +1,7 @@
 "use client";
 
 export class ApiError extends Error {
-  constructor(public status: number, public code: string, message: string) {
+  constructor(public status: number, public code: string, message: string, public body?: any) {
     super(message);
   }
 }
@@ -14,7 +14,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const text = await res.text();
   const data = text ? JSON.parse(text) : {};
   if (!res.ok) {
-    throw new ApiError(res.status, data.error ?? "Error", data.message ?? "Something went wrong. Please try again.");
+    throw new ApiError(res.status, data.error ?? "Error", data.message ?? "Something went wrong. Please try again.", data);
   }
   return data as T;
 }

@@ -43,11 +43,21 @@
     "serviceUnavailable": "The portal is temporarily unable to load live slot information. Please try again in a few minutes.",
     "slowNetwork": "We are having trouble loading the latest information. Your saved bookings are still available.",
     "liveConnected": "Live data connected",
-    "liveLost": "Live connection lost. Showing the last known information. Reconnecting automatically."
+    "liveLost": "Live connection lost. Showing the last known information. Reconnecting automatically.",
+    "skipToContent": "Skip to main content"
   },
   "home": {
     "heroCta1": "Register as a Farmer",
     "heroCta2": "Login",
+    "heroSub": "An initiative of the Department of Consumer Affairs to make procurement scheduling predictable for every farmer.",
+    "visionTitle": "A digitally empowered kisan",
+    "visionQuote": "When the farmer of India is strong, the nation is strong. Technology must reach the farm and save the farmer's time.",
+    "visionAttribution": "— India's vision for the welfare of its farmers",
+    "visionBody": "Kisan Sahayak Portal takes that vision to the procurement centre: know your centre, book a slot in your own language, and arrive only when it is your turn.",
+    "langTitle": "Available in your language",
+    "langBody": "Every screen, notification and error message is designed for multi-lingual delivery. The portal currently ships English, Hindi, Telugu and Bengali, with more Indian languages planned.",
+    "langMore": "More languages coming",
+    "currentBody": "Rice Procurement · Kharif 2026 is currently open in mapped service areas. Check Slot Booking after logging in.",
     "whatTitle": "What this portal does",
     "what1Title": "Book a slot",
     "what1Body": "See procurement schedules for your area and reserve a time before you travel.",
@@ -57,7 +67,7 @@
     "what3Body": "Follow procurement and payment status from one place.",
     "currentTitle": "Current information",
     "aboutTitle": "About this portal",
-    "aboutMore": "Read the full About page",
+    "aboutMore": "Read the full About page →",
     "schemesTitle": "Government Schemes & Awareness"
   },
   "about": {
@@ -111,6 +121,10 @@
     "district": "District",
     "state": "State",
     "pincode": "Pincode",
+    "pincodeHint": "Enter your 6-digit pincode. District and state fill in automatically.",
+    "pincodeLooking": "Looking up your district and state…",
+    "geoAuto": "District and state were filled from your pincode.",
+    "geoEdit": "Not correct? Edit manually",
     "serviceAreaFound": "Service area found: {{district}} district",
     "serviceAreaMissing": "We do not have centre coverage mapped for this pincode yet. You can continue, but slot booking may not be available until an eligible centre is configured.",
     "step3Title": "Aadhaar document",
@@ -302,6 +316,7 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "accessibility": "Accessibility",
-    "sources": "Official sources"
+    "sources": "Official sources",
+    "partners": "Part of the Digital India ecosystem"
   }
 }

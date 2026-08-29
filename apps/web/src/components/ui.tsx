@@ -110,22 +110,33 @@ export function Tabs<T extends string>({
 
 export function Stepper({ steps, current }: { steps: string[]; current: number }) {
   return (
-    <ol className="flex items-center gap-2 mb-6 text-xs">
-      {steps.map((s, i) => (
-        <li key={s} className="flex items-center gap-2">
-          <span
-            className={cx(
-              "flex h-6 w-6 items-center justify-center rounded-full font-semibold",
-              i < current ? "bg-green-700 text-white" : i === current ? "bg-green-100 text-green-900 ring-2 ring-green-700" : "bg-gray-100 text-muted"
-            )}
-          >
-            {i + 1}
-          </span>
-          <span className={cx("hidden sm:inline", i === current ? "text-ink font-medium" : "text-muted")}>{s}</span>
-          {i < steps.length - 1 && <span className="w-6 h-px bg-line" />}
-        </li>
-      ))}
-    </ol>
+    <div className="mb-6">
+      <ol className="flex items-center gap-1.5">
+        {steps.map((s, i) => (
+          <li key={s} className="flex items-center gap-1.5">
+            <span
+              className={cx(
+                "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
+                i < current
+                  ? "bg-green-700 text-white"
+                  : i === current
+                    ? "bg-green-100 text-green-900 ring-2 ring-green-700"
+                    : "bg-gray-100 text-muted"
+              )}
+            >
+              {i < current ? "✓" : i + 1}
+            </span>
+            {i < steps.length - 1 && <span className="h-px w-4 bg-line sm:w-8" />}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-2 text-sm font-medium text-ink">
+        {steps[current]}
+        <span className="ml-2 text-xs font-normal text-muted">
+          ({current + 1}/{steps.length})
+        </span>
+      </p>
+    </div>
   );
 }
 
