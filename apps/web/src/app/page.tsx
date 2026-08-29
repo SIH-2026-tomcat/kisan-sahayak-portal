@@ -48,8 +48,8 @@ export default function HomePage() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/gov/pm-portrait.png"
-            alt="Prime Minister of India"
+            src="/gov/farmer.webp"
+            alt="An Indian farmer standing in front of a tractor with a wheat harvest"
             className="mx-auto h-56 w-auto self-end sm:h-72"
           />
         </div>

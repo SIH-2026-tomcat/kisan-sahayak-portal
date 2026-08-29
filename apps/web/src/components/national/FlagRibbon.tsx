@@ -1,27 +1,29 @@
 "use client";
 
 const NAVY = "#1A4B9C";
+const SAFFRON = "#F49A24";
+const GREEN = "#1C8A3B";
+const WHITE = "#D7D7D7";
 
-/** Chakra centred at (cx,cy) with radius r. The spinning group is tagged so
- * globals.css can rotate it (and stop under prefers-reduced-motion). */
+/** Rotating 24-spoke Ashoka Chakra centred at (cx,cy), radius r. */
 function Chakra({ cx, cy, r }: { cx: number; cy: number; r: number }) {
   const spokes = 24;
   return (
     <g>
-      <circle cx={cx} cy={cy} r={r + 3.5} fill="#fff" />
-      <circle cx={cx} cy={cy} r={r + 3.5} fill="none" stroke={NAVY} strokeWidth="2.4" />
+      <circle cx={cx} cy={cy} r={r + 3} fill="#fff" />
+      <circle cx={cx} cy={cy} r={r + 3} fill="none" stroke={NAVY} strokeWidth="2" />
       <g className="flag-ribbon__chakra" style={{ transformOrigin: `${cx}px ${cy}px` }}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke={NAVY} strokeWidth="2.6" />
-        <circle cx={cx} cy={cy} r={r * 0.15} fill={NAVY} />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={NAVY} strokeWidth="2.4" />
+        <circle cx={cx} cy={cy} r={r * 0.16} fill={NAVY} />
         {Array.from({ length: spokes }, (_, i) => (
           <line
             key={i}
             x1={cx}
             y1={cy}
             x2={cx}
-            y2={cy - r * 0.92}
+            y2={cy - r * 0.9}
             stroke={NAVY}
-            strokeWidth="1.5"
+            strokeWidth="1.3"
             strokeLinecap="round"
             transform={`rotate(${(i * 360) / spokes} ${cx} ${cy})`}
           />
@@ -30,8 +32,8 @@ function Chakra({ cx, cy, r }: { cx: number; cy: number; r: number }) {
           <circle
             key={`d${i}`}
             cx={cx}
-            cy={cy - r * 0.9}
-            r="1.5"
+            cy={cy - r * 0.88}
+            r="1.3"
             fill={NAVY}
             transform={`rotate(${(i * 360) / spokes + 180 / spokes} ${cx} ${cy})`}
           />
@@ -41,67 +43,120 @@ function Chakra({ cx, cy, r }: { cx: number; cy: number; r: number }) {
   );
 }
 
-/**
- * Curvy, wavy brush-stroke band. Top and bottom edges undulate out of phase so
- * the stroke thickness swells and thins like a real brush; both ends taper to a
- * point, and a scatter of flecks and a bristle streak trail off the tip.
- */
-function Band({ y, fill, phase = 0 }: { y: number; fill: string; phase?: number }) {
-  const p = phase;
+type RibbonProps = {
+  d: string;
+  color: string;
+  width: number;
+  streakColor: string;
+  streaks: string[];
+  hairs: string[];
+  stipple: [number, number, number][];
+};
+
+/** One flowing dry-brush ribbon: a solid wavy stroke, bristle highlight
+ * streaks, a frayed/stippled edge and hair wisps off the left tail. */
+function Ribbon({ d, color, width, streakColor, streaks, hairs, stipple }: RibbonProps) {
   return (
-    <g fill={fill}>
+    <g>
+      <path d={d} fill="none" stroke={color} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" />
+      {/* frayed ends */}
       <path
-        d={`
-          M 0 ${y + 8 + p}
-          C 22 ${y - 8 + p}, 58 ${y + 12 + p}, 96 ${y - 6 + p}
-          C 134 ${y - 22 + p}, 180 ${y + 2 + p}, 220 ${y - 10 + p}
-          C 240 ${y - 15 + p}, 256 ${y - 6 + p}, 262 ${y + 6 + p}
-          C 258 ${y + 16 + p}, 250 ${y + 20 + p}, 236 ${y + 22 + p}
-          C 190 ${y + 40 + p}, 150 ${y + 22 + p}, 108 ${y + 32 + p}
-          C 66 ${y + 42 + p}, 30 ${y + 22 + p}, 4 ${y + 36 + p}
-          C -6 ${y + 28 + p}, -6 ${y + 18 + p}, 0 ${y + 8 + p}
-          Z`}
-      />
-      {/* bristle streak */}
-      <path
-        d={`M 12 ${y + 14 + p} C 70 ${y + 2 + p}, 150 ${y + 8 + p}, 232 ${y + 2 + p}`}
-        stroke="#ffffff"
-        strokeOpacity="0.28"
-        strokeWidth="2.4"
-        strokeLinecap="round"
+        d={d}
         fill="none"
+        stroke={color}
+        strokeWidth={width + 5}
+        strokeLinecap="round"
+        strokeDasharray="0 14 5 10 4 999"
+        strokeOpacity={0.9}
       />
-      {/* trailing flecks off the tip */}
-      <circle cx={252} cy={y - 2 + p} r={3} />
-      <circle cx={262} cy={y + 10 + p} r={2} />
-      <circle cx={256} cy={y + 24 + p} r={2.6} />
-      <circle cx={268} cy={y + 2 + p} r={1.4} />
-      <path d={`M 244 ${y + 20 + p} q 12 4 22 -2 q -8 10 -22 6 Z`} />
+      {stipple.map(([x, y, r], i) => (
+        <circle key={i} cx={x} cy={y} r={r} fill={color} />
+      ))}
+      {streaks.map((s, i) => (
+        <path
+          key={i}
+          d={s}
+          fill="none"
+          stroke={streakColor}
+          strokeOpacity={0.35}
+          strokeWidth={i % 2 ? 1.6 : 2.6}
+          strokeLinecap="round"
+        />
+      ))}
+      {hairs.map((h, i) => (
+        <path key={i} d={h} fill="none" stroke={color} strokeWidth={i % 2 ? 2 : 3.4} strokeLinecap="round" />
+      ))}
     </g>
   );
 }
 
 /**
- * Fixed bottom-right national ornament: a painted, wavy tricolour brush stroke
- * with torn edges and a large rotating Ashoka Chakra. Decorative,
- * non-interactive, calmed by prefers-reduced-motion.
+ * Fixed bottom-right national ornament: a flowing, wavy tricolour brush stroke
+ * with dry-brush texture and a rotating Ashoka Chakra at the tip — modelled on
+ * an abstract Indian-flag brush illustration. Decorative, non-interactive,
+ * calmed by prefers-reduced-motion.
  */
 export function FlagRibbon({ className }: { className?: string }) {
   return (
     <div className={`flag-ribbon ${className ?? ""}`} aria-hidden>
-      <svg viewBox="0 0 280 210" className="h-auto w-full">
+      <svg viewBox="0 0 348 168" className="h-auto w-full">
         <g className="flag-ribbon__cloth">
-          <g transform="rotate(-12 150 120)">
-            <g transform="rotate(-2 130 60)">
-              <Band y={54} fill="#FF9933" phase={0} />
-            </g>
-            <Band y={88} fill="#DBDBDB" phase={2} />
-            <g transform="rotate(2 130 130)">
-              <Band y={122} fill="#138808" phase={-1} />
-            </g>
-          </g>
+          <Ribbon
+            d="M14 84 C 62 106, 122 62, 178 56 C 234 50, 294 36, 332 20"
+            color={SAFFRON}
+            width={20}
+            streakColor="#ffffff"
+            streaks={[
+              "M22 82 C 80 66, 160 58, 250 44 C 286 39, 308 33, 322 27",
+              "M26 90 C 90 82, 160 74, 244 60",
+            ]}
+            hairs={["M14 82 C 2 78, -8 84, -20 79", "M15 87 C 3 87, -7 94, -19 92", "M18 76 C 8 71, 0 66, -10 62"]}
+            stipple={[
+              [40, 96, 2.4],
+              [96, 82, 2.2],
+              [150, 70, 2.6],
+              [210, 56, 2.2],
+              [268, 44, 2.4],
+              [312, 28, 2],
+            ]}
+          />
+          <Ribbon
+            d="M12 102 C 60 124, 120 80, 176 74 C 232 68, 292 54, 334 38"
+            color={WHITE}
+            width={20}
+            streakColor="#8f8f8f"
+            streaks={["M22 100 C 90 86, 170 78, 262 62", "M26 108 C 96 100, 170 92, 250 78"]}
+            hairs={["M12 100 C 0 96, -10 102, -22 97", "M13 105 C 1 105, -9 112, -21 110"]}
+            stipple={[
+              [46, 114, 2.2],
+              [104, 96, 2.2],
+              [160, 84, 2.4],
+              [220, 70, 2.2],
+              [280, 56, 2.2],
+              [318, 44, 2],
+            ]}
+          />
+          <Ribbon
+            d="M10 120 C 58 142, 118 98, 174 92 C 230 86, 290 72, 334 56"
+            color={GREEN}
+            width={18}
+            streakColor="#ffffff"
+            streaks={[
+              "M20 118 C 88 104, 168 96, 262 80 C 296 75, 318 69, 330 63",
+              "M24 126 C 92 118, 168 110, 250 96",
+            ]}
+            hairs={["M10 118 C -2 114, -12 120, -24 115", "M11 123 C -1 123, -11 130, -23 128", "M14 112 C 4 107, -4 102, -14 98"]}
+            stipple={[
+              [44, 132, 2.4],
+              [102, 112, 2.2],
+              [160, 100, 2.6],
+              [220, 86, 2.2],
+              [282, 72, 2.4],
+              [320, 60, 2],
+            ]}
+          />
         </g>
-        <Chakra cx={84} cy={98} r={54} />
+        <Chakra cx={320} cy={19} r={19} />
       </svg>
     </div>
   );
