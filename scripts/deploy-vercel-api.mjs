@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import { spawnSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { mkdirSync, writeFileSync } from "node:fs";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(scriptDir, "..");
@@ -14,7 +15,7 @@ if (!TOKEN) {
 }
 
 const PROJECT = "kisan-sahayak-api";
-const WEB_URL = process.env.NEXT_PUBLIC_APP_URL_PROD || "https://web-kritantasasanroys-projects.vercel.app";
+const WEB_URL = process.env.NEXT_PUBLIC_APP_URL_PROD || "https://web-rust-sigma-11.vercel.app";
 
 const ENV_KEYS = [
   "DATABASE_URL",
@@ -38,27 +39,26 @@ async function vapi(path, opts = {}) {
     ...opts,
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json", ...opts.headers },
   });
-  const data = await res.json().catch(() => ({}));
-  return { status: res.status, data };
+  return { status: res.status, data: await res.json().catch(() => ({})) };
 }
 
 async function main() {
-  // 1. ensure the project exists with rootDirectory = apps/api
-  let { status, data } = await vapi("/v10/projects", {
+  let { data } = await vapi("/v10/projects", {
     method: "POST",
     body: JSON.stringify({ name: PROJECT, framework: null, rootDirectory: "apps/api" }),
   });
   let projectId = data.id;
+  let orgId = data.accountId;
   if (!projectId) {
     const got = await vapi(`/v9/projects/${PROJECT}`);
     projectId = got.data.id;
+    orgId = got.data.accountId;
     console.log(`Using existing project ${PROJECT} (${projectId})`);
   } else {
     console.log(`Created project ${PROJECT} (${projectId})`);
   }
 
-  // 2. push env vars
-  const envValues = { ...Object.fromEntries(ENV_KEYS.map((k) => [k, process.env[k] || ""])) };
+  const envValues = Object.fromEntries(ENV_KEYS.map((k) => [k, process.env[k] || ""]));
   envValues.PUBLIC_APP_URL = WEB_URL;
   envValues.PUBLIC_API_URL = `https://${PROJECT}.vercel.app`;
   for (const [key, value] of Object.entries(envValues)) {
@@ -70,13 +70,14 @@ async function main() {
     console.log(`  env ${key}: ${r.status}`);
   }
 
-  // 3. deploy from repo root, linked to the project (rootDirectory handles the subdir)
-  spawnSync("npx", ["vercel", "pull", "--yes", "--environment=production", "--token", TOKEN], { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
-  const res = spawnSync(
-    "npx",
-    ["vercel", "deploy", "--prod", "--yes", "--token", TOKEN, "--name", PROJECT],
-    { cwd: root, stdio: "inherit", shell: process.platform === "win32", env: { ...process.env, VERCEL_PROJECT_ID: projectId } }
-  );
+  // deploy from repo root so the npm workspace is intact; rootDirectory=apps/api handles the subdir
+  mkdirSync(resolve(root, ".vercel"), { recursive: true });
+  writeFileSync(resolve(root, ".vercel/project.json"), JSON.stringify({ projectId, orgId }, null, 2));
+  const res = spawnSync("npx", ["vercel", "deploy", "--prod", "--yes", "--token", TOKEN], {
+    cwd: root,
+    stdio: "inherit",
+    shell: process.platform === "win32",
+  });
   process.exit(res.status ?? 1);
 }
 
