@@ -64,7 +64,7 @@
   bottom: 0.5rem;
   z-index: 30;
   pointer-events: none;
-  width: 168px;
+  width: 196px;
   filter: drop-shadow(0 6px 14px rgba(16, 24, 40, 0.22));
 }
 .flag-ribbon__cloth {
@@ -87,7 +87,7 @@
 }
 
 @media (max-width: 640px) {
-  .flag-ribbon { width: 92px; right: 0.25rem; bottom: 0.3rem; opacity: 0.88; }
+  .flag-ribbon { width: 122px; right: 0.2rem; bottom: 0.25rem; opacity: 0.9; }
 }
 
 @media (prefers-reduced-motion: reduce) {
