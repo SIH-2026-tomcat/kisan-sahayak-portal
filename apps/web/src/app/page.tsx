@@ -5,6 +5,7 @@ import { PublicShell } from "@/components/PublicShell";
 import { Card } from "@/components/ui";
 import { SchemeCards } from "@/components/SchemeCards";
 import { AshokaChakra } from "@/components/national/AshokaChakra";
+import { FlagRibbon } from "@/components/national/FlagRibbon";
 import { useT } from "@/i18n/I18nProvider";
 import { LOCALE_LABELS, LOCALES } from "@/i18n";
 
@@ -115,6 +116,8 @@ export default function HomePage() {
         <h2 className="mb-4 text-xl font-semibold">{t("home.schemesTitle")}</h2>
         <SchemeCards />
       </section>
+
+      <FlagRibbon />
     </PublicShell>
   );
 }

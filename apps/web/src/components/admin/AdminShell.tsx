@@ -6,7 +6,6 @@ import { useState } from "react";
 import { GovMark } from "@/components/GovMark";
 import { SignOutButton } from "@/components/SignOutButton";
 import { RealtimeBanner } from "@/components/admin/RealtimeBanner";
-import { FlagRibbon } from "@/components/national/FlagRibbon";
 import { useT } from "@/i18n/I18nProvider";
 import { cx } from "@/components/ui";
 
@@ -73,7 +72,6 @@ export function AdminShell({ email, children }: { email: string; children: React
         <div className="px-4 pt-3"><RealtimeBanner /></div>
         <main className="flex-1 p-4">{children}</main>
       </div>
-      <FlagRibbon className="hidden sm:block" />
     </div>
   );
 }

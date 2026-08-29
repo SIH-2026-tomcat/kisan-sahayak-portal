@@ -7,7 +7,6 @@ import { GovMark } from "@/components/GovMark";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { NotificationBell } from "@/components/farmer/NotificationBell";
 import { SignOutButton } from "@/components/SignOutButton";
-import { FlagRibbon } from "@/components/national/FlagRibbon";
 import { useT } from "@/i18n/I18nProvider";
 import { cx } from "@/components/ui";
 
@@ -61,7 +60,6 @@ export function FarmerShell({ name, children }: { name: string; children: React.
       </header>
 
       <main className="flex-1 container-page py-5">{children}</main>
-      <FlagRibbon className="hidden sm:block" />
 
       <nav className="sm:hidden fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-line bg-white">
         {NAV.map((n) => (

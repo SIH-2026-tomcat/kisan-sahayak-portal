@@ -15,7 +15,7 @@ function wave(baseY: number, ampl: number, phase: number, rise: number, steps = 
   for (let i = 0; i <= steps; i++) {
     const x = X0 + ((X1 - X0) * i) / steps;
     const t = (x - X0) / (X1 - X0);
-    const y = baseY + rise * t + ampl * Math.sin(t * Math.PI * 5 + phase);
+    const y = baseY + rise * t + ampl * Math.sin(t * Math.PI * 2 + phase);
     pts.push([x, y]);
   }
   let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
@@ -81,9 +81,9 @@ function Ribbon({
   width: number;
   streakColor: string;
 }) {
-  const { d, pts } = wave(baseY, 18, phase, -46);
-  const streakA = wave(baseY - 3, 18, phase, -46).d;
-  const streakB = wave(baseY + 3, 15, phase + 0.3, -46).d;
+  const { d, pts } = wave(baseY, 22, phase, -40);
+  const streakA = wave(baseY - 3, 22, phase, -40).d;
+  const streakB = wave(baseY + 3, 19, phase + 0.3, -40).d;
   // stipple the top & bottom edges for a frayed brush look
   const stipple = pts.filter((_, i) => i % 4 === 1);
   return (

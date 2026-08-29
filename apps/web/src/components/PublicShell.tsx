@@ -1,7 +1,6 @@
 "use client";
 import { PublicHeader } from "./PublicHeader";
 import { Footer } from "./Footer";
-import { FlagRibbon } from "./national/FlagRibbon";
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +10,6 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <Footer />
-      <FlagRibbon />
     </div>
   );
 }
