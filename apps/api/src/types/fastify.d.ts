@@ -1,7 +1,9 @@
-import { FastifyRequest } from "fastify";
+import type { DbUser } from "../lib/auth.js";
 
 declare module "fastify" {
   interface FastifyRequest {
-    user?: { id: string; email: string; name?: string };
+    user?: DbUser;
   }
 }
+
+export {};

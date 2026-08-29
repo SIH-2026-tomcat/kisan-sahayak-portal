@@ -1,0 +1,37 @@
+{
+  "_note": "Starter Hindi translations from the spec copy bank plus machine translation. Needs native review before public release. Untranslated keys fall back to English.",
+  "brand": {
+    "name": "किसान सहायक पोर्टल",
+    "tagline": "अपना केंद्र जानें। अपना स्लॉट बुक करें। अपनी बारी पर आएं।",
+    "ministry": "उपभोक्ता मामले, खाद्य और सार्वजनिक वितरण मंत्रालय",
+    "department": "उपभोक्ता मामले विभाग (DoCA)",
+    "govOfIndia": "भारत सरकार",
+    "prototypeNote": "हैकथॉन मूल्यांकन के लिए प्रोटोटाइप। यह आधिकारिक भारत सरकार सेवा नहीं है।"
+  },
+  "nav": {
+    "home": "होम", "about": "पोर्टल के बारे में", "schemes": "सरकारी योजनाएँ", "help": "सहायता और समर्थन",
+    "login": "लॉग इन करें", "register": "पंजीकरण करें", "logout": "लॉग आउट",
+    "dashboard": "होम", "procurement": "खरीद", "book": "स्लॉट बुकिंग", "myBookings": "मेरी बुकिंग",
+    "announcements": "घोषणाएँ", "notifications": "सूचनाएँ", "profile": "प्रोफ़ाइल", "language": "भाषा"
+  },
+  "common": {
+    "loading": "लोड हो रहा है…", "retry": "फिर से प्रयास करें", "somethingWrong": "कुछ गड़बड़ हो गई है",
+    "save": "सहेजें", "cancel": "रद्द करें", "continue": "जारी रखें", "back": "पीछे", "next": "आगे",
+    "submit": "सबमिट करें", "close": "बंद करें", "search": "खोजें", "filter": "फ़िल्टर",
+    "viewOnMap": "मानचित्र पर देखें", "listView": "सूची", "mapView": "मानचित्र",
+    "serviceUnavailable": "पोर्टल अभी लाइव स्लॉट जानकारी लोड नहीं कर पा रहा है। कृपया कुछ मिनटों में पुनः प्रयास करें।",
+    "liveConnected": "लाइव डेटा जुड़ा हुआ है",
+    "liveLost": "लाइव कनेक्शन टूट गया। अंतिम ज्ञात जानकारी दिखाई जा रही है। स्वतः पुनः कनेक्ट हो रहा है।"
+  },
+  "home": { "heroCta1": "किसान के रूप में पंजीकरण करें", "heroCta2": "लॉग इन करें", "schemesTitle": "सरकारी योजनाएँ और जागरूकता" },
+  "booking": {
+    "title": "खरीद स्लॉट बुक करें", "tabOpen": "बुकिंग के लिए उपलब्ध", "tabUpcoming": "आगामी", "tabClosed": "बंद",
+    "slotsLeft": "{{count}} स्लॉट शेष", "full": "सभी स्लॉट भर गए", "bookBtn": "यह स्लॉट बुक करें",
+    "noSlots": "कोई स्लॉट उपलब्ध नहीं है", "confirmedTitle": "बुकिंग की पुष्टि हो गई",
+    "confirmedMsg": "आपका स्लॉट सफलतापूर्वक बुक हो गया है।", "bookingId": "बुकिंग आईडी", "token": "टोकन नंबर",
+    "directions": "मानचित्र पर केंद्र देखें", "cancelBtn": "बुकिंग रद्द करें"
+  },
+  "announcements": { "title": "घोषणाएँ", "notificationsTitle": "सूचनाएँ", "empty": "अभी कोई घोषणा नहीं।" },
+  "dashboard": { "greeting": "स्वागत है, {{name}}", "viewBooking": "बुकिंग देखें" },
+  "auth": { "loginTitle": "अपने किसान खाते में लॉग इन करें", "methodEmail": "ईमेल", "methodMobile": "मोबाइल", "password": "पासवर्ड" }
+}

@@ -9,15 +9,16 @@ import {
   jsonb,
   pgEnum,
   unique,
+  uniqueIndex,
   index,
   decimal,
   date,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum("user_role", [
   "farmer",
-  "admin",
+  "operations_admin",
   "super_admin",
   "support_agent",
 ]);
@@ -334,16 +335,26 @@ export const bookings = pgTable(
     slotId: uuid("slot_id")
       .notNull()
       .references(() => slots.id, { onDelete: "cascade" }),
+    procurementWindowId: uuid("procurement_window_id")
+      .notNull()
+      .references(() => procurementWindows.id, { onDelete: "cascade" }),
     bookingCode: varchar("booking_code", { length: 20 }).notNull().unique(),
     tokenNumber: integer("token_number"),
     status: bookingStatusEnum("status").notNull().default("pending"),
+    paymentReference: varchar("payment_reference", { length: 64 }),
+    paymentUpdatedAt: timestamp("payment_updated_at", { withTimezone: true }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
     farmerSlotUnique: unique("farmer_slot_unique").on(table.farmerId, table.slotId),
+    farmerWindowActiveUnique: uniqueIndex("bookings_farmer_window_active_uniq")
+      .on(table.farmerId, table.procurementWindowId)
+      .where(sql`${table.status} <> 'cancelled'`),
     farmerIdx: index("bookings_farmer_id_idx").on(table.farmerId),
     slotIdx: index("bookings_slot_id_idx").on(table.slotId),
+    windowIdx: index("bookings_procurement_window_id_idx").on(table.procurementWindowId),
     codeIdx: index("bookings_booking_code_idx").on(table.bookingCode),
   })
 );
@@ -356,6 +367,10 @@ export const bookingsRelations = relations(bookings, ({ one }) => ({
   slot: one(slots, {
     fields: [bookings.slotId],
     references: [slots.id],
+  }),
+  procurementWindow: one(procurementWindows, {
+    fields: [bookings.procurementWindowId],
+    references: [procurementWindows.id],
   }),
 }));
 

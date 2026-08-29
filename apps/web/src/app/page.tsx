@@ -1,46 +1,64 @@
-import { getAreasByPincode, getOpenSlots } from "@/lib/api";
-import SlotCard from "@/components/SlotCard";
+"use client";
 
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { PublicShell } from "@/components/PublicShell";
+import { Card } from "@/components/ui";
+import { SchemeCards } from "@/components/SchemeCards";
+import { useT } from "@/i18n/I18nProvider";
 
-export default async function HomePage() {
-  const pincode = "754211";
-  const areaData = await getAreasByPincode(pincode);
-  const slotsData = areaData
-    ? await getOpenSlots(areaData.serviceArea.id)
-    : { items: [] };
-
+export default function HomePage() {
+  const t = useT();
   return (
-    <main className="max-w-3xl mx-auto p-4">
-      <section className="bg-gov-green-900 text-white p-6 rounded-lg mb-6">
-        <p className="text-sm uppercase tracking-wide opacity-80">Government of India</p>
-        <h1 className="text-2xl font-bold mt-1">Kisan Sahayak Portal</h1>
-        <p className="mt-2 text-gov-green-100">
-          Know your centre. Book your slot. Come when it is your turn.
-        </p>
-      </section>
-
-      {areaData && (
-        <section className="bg-white border border-gov-border rounded-lg p-4 mb-6 shadow-sm">
-          <h2 className="font-semibold text-gov-ink">Service area found</h2>
-          <p className="text-gov-muted">
-            {areaData.serviceArea.district} district, {areaData.serviceArea.state}
-          </p>
-        </section>
-      )}
-
-      <section className="bg-white border border-gov-border rounded-lg p-4 shadow-sm">
-        <h2 className="font-semibold text-gov-ink mb-4">Open slots</h2>
-        {slotsData.items.length === 0 ? (
-          <p className="text-gov-muted">No open slots right now.</p>
-        ) : (
-          <div className="space-y-3">
-            {slotsData.items.map((slot: any) => (
-              <SlotCard key={slot.id} slot={slot} />
-            ))}
+    <PublicShell>
+      <section className="bg-green-800 text-white">
+        <div className="container-page py-10 sm:py-14 max-w-reading">
+          <p className="text-sm uppercase tracking-wide text-green-100">{t("brand.govOfIndia")}</p>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-bold text-white">{t("brand.name")}</h1>
+          <p className="mt-3 text-green-50 text-lg">{t("brand.tagline")}</p>
+          <p className="mt-2 text-green-100 text-sm">{t("about.body").slice(0, 160)}…</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link href="/register" className="btn-saffron no-underline">{t("home.heroCta1")}</Link>
+            <Link href="/login" className="btn-outline bg-white/10 text-white border-white/40 no-underline hover:bg-white/20">
+              {t("home.heroCta2")}
+            </Link>
           </div>
-        )}
+        </div>
       </section>
-    </main>
+
+      <section className="container-page py-10">
+        <h2 className="text-xl font-semibold mb-4">{t("home.whatTitle")}</h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {["1", "2", "3"].map((n) => (
+            <Card key={n}>
+              <h3 className="text-base font-semibold">{t(`home.what${n}Title`)}</h3>
+              <p className="mt-1 text-sm text-muted">{t(`home.what${n}Body`)}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-paper">
+        <div className="container-page py-10">
+          <h2 className="text-xl font-semibold mb-4">{t("home.currentTitle")}</h2>
+          <Card>
+            <p className="font-medium">{t("dashboard.importantInfo")}</p>
+            <p className="mt-1 text-sm text-muted">Rice Procurement · Kharif 2026 is currently open in mapped service areas.</p>
+          </Card>
+        </div>
+      </section>
+
+      <section className="container-page py-10">
+        <h2 className="text-xl font-semibold mb-2">{t("home.aboutTitle")}</h2>
+        <p className="text-muted max-w-reading">{t("about.body")}</p>
+        <p className="mt-2"><Link href="/about">{t("home.aboutMore")}</Link></p>
+      </section>
+
+      <section className="bg-paper">
+        <div className="container-page py-10">
+          <h2 className="text-xl font-semibold mb-4">{t("home.schemesTitle")}</h2>
+          <SchemeCards />
+        </div>
+      </section>
+    </PublicShell>
   );
 }

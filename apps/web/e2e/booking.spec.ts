@@ -1,56 +1,51 @@
-import { test, expect, request } from "@playwright/test";
+import { test, expect, request as pwRequest } from "@playwright/test";
 
-const API_URL = process.env.PUBLIC_API_URL || "http://localhost:3001";
+/**
+ * End-to-end booking flow driven through the web BFF + Neon Auth.
+ * A single APIRequestContext keeps the session cookie across calls.
+ */
+test("farmer registers, completes profile and books a slot", async ({ baseURL }) => {
+  const email = `e2e.${Date.now()}@hawkvance.in`;
+  const password = "E2ePass123456";
+  const ctx = await pwRequest.newContext({ baseURL });
 
-async function uniqueEmail() {
-  return `test-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@hawkvance.in`;
-}
-
-test.describe("end-to-end booking flow", () => {
-  test("registers a farmer, creates a profile, books a slot, and prevents a duplicate", async ({ page }) => {
-    const api = await request.newContext({ baseURL: API_URL });
-
-    const email = await uniqueEmail();
-    const register = await api.post("/auth/register", {
-      data: { email, password: "TestPass123", name: "Playwright Farmer" },
-    });
-    expect(register.ok()).toBeTruthy();
-    const { token } = (await register.json()) as { token: string };
-
-    const profile = await api.post("/farmers/profile", {
-      headers: { Authorization: `Bearer ${token}` },
-      data: {
-        fullName: "Playwright Farmer",
-        addressLine1: "Bhatapara",
-        district: "Kendrapara",
-        state: "Odisha",
-        pincode: "754211",
-        mobile: `+91${Math.floor(1e9 + Math.random() * 9e9)}`,
-        consent: true,
-      },
-    });
-    expect(profile.ok()).toBeTruthy();
-
-    const slotsRes = await api.get(`/slots?serviceAreaId=59882d00-9c29-4ce5-be82-fe4436d0e180&status=open`);
-    expect(slotsRes.ok()).toBeTruthy();
-    const { items } = (await slotsRes.json()) as { items: { id: string }[] };
-    expect(items.length).toBeGreaterThan(0);
-
-    const slotId = items[0].id;
-    const book = await api.post(`/slots/${slotId}/book`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(book.ok()).toBeTruthy();
-    const { booking } = (await book.json()) as { booking: { bookingCode: string; tokenNumber: number } };
-    expect(booking.bookingCode).toMatch(/^KS-/);
-    expect(booking.tokenNumber).toBeGreaterThan(0);
-
-    const duplicate = await api.post(`/slots/${slotId}/book`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(duplicate.status()).toBe(409);
-
-    await page.goto("/");
-    await expect(page.locator("text=Book this slot").first()).toBeVisible();
+  const signup = await ctx.post("/api/auth/sign-up/email", {
+    data: { email, password, name: "E2E Farmer" },
+    headers: { origin: baseURL! },
   });
+  expect(signup.ok(), await signup.text()).toBeTruthy();
+
+  const me = await (await ctx.get("/api/bff/auth/me")).json();
+  expect(me.user.email).toBe(email);
+
+  const prof = await ctx.post("/api/bff/farmers/profile", {
+    data: {
+      fullName: "E2E Farmer",
+      addressLine1: "Village E2E",
+      district: "Kendrapara",
+      state: "Odisha",
+      pincode: "754211",
+      mobile: `98${Math.floor(10000000 + Math.random() * 89999999)}`,
+      consent: true,
+    },
+  });
+  expect(prof.ok(), await prof.text()).toBeTruthy();
+  const { serviceAreaId } = await prof.json();
+
+  const slots = await (await ctx.get(`/api/bff/slots?serviceAreaId=${serviceAreaId}&tab=open`)).json();
+  const slot = slots.items.find((s: any) => s.remaining > 0);
+  expect(slot).toBeTruthy();
+
+  const booked = await ctx.post(`/api/bff/slots/${slot.id}/book`);
+  expect(booked.ok(), await booked.text()).toBeTruthy();
+  const { booking } = await booked.json();
+  expect(booking.bookingCode).toMatch(/^KS-/);
+  expect(booking.tokenNumber).toBeGreaterThan(0);
+
+  const slot2 = slots.items.find((s: any) => s.id !== slot.id && s.remaining > 0);
+  if (slot2) {
+    const dup = await ctx.post(`/api/bff/slots/${slot2.id}/book`);
+    expect(dup.status()).toBe(409);
+  }
+  await ctx.dispose();
 });

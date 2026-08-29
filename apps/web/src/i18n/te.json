@@ -1,0 +1,30 @@
+{
+  "_note": "Starter Telugu translations from the spec copy bank plus machine translation. Needs native review before public release. Untranslated keys fall back to English.",
+  "brand": {
+    "name": "కిసాన్ సహాయక్ పోర్టల్",
+    "tagline": "మీ కేంద్రాన్ని తెలుసుకోండి. మీ స్లాట్ బుక్ చేసుకోండి. మీ వంతు వచ్చినప్పుడు రండి.",
+    "govOfIndia": "భారత ప్రభుత్వం",
+    "prototypeNote": "హ్యాకథాన్ మూల్యాంకనం కోసం నమూనా. ఇది అధికారిక భారత ప్రభుత్వ సేవ కాదు."
+  },
+  "nav": {
+    "home": "హోమ్", "about": "పోర్టల్ గురించి", "schemes": "ప్రభుత్వ పథకాలు", "help": "సహాయం మరియు మద్దతు",
+    "login": "లాగిన్", "register": "నమోదు చేసుకోండి", "logout": "లాగ్ అవుట్",
+    "dashboard": "హోమ్", "procurement": "సేకరణ", "book": "స్లాట్ బుకింగ్", "myBookings": "నా బుకింగ్‌లు",
+    "announcements": "ప్రకటనలు", "notifications": "నోటిఫికేషన్లు", "profile": "ప్రొఫైల్", "language": "భాష"
+  },
+  "common": {
+    "loading": "లోడ్ అవుతోంది…", "retry": "మళ్లీ ప్రయత్నించండి", "somethingWrong": "ఏదో తప్పు జరిగింది",
+    "save": "సేవ్ చేయండి", "cancel": "రద్దు చేయండి", "continue": "కొనసాగించండి", "back": "వెనుకకు", "next": "తదుపరి",
+    "viewOnMap": "మ్యాప్‌లో చూడండి",
+    "serviceUnavailable": "పోర్టల్ ప్రస్తుతం లైవ్ స్లాట్ సమాచారాన్ని లోడ్ చేయలేకపోతోంది. దయచేసి కొన్ని నిమిషాల్లో మళ్లీ ప్రయత్నించండి."
+  },
+  "home": { "heroCta1": "రైతుగా నమోదు చేసుకోండి", "heroCta2": "లాగిన్", "schemesTitle": "ప్రభుత్వ పథకాలు మరియు అవగాహన" },
+  "booking": {
+    "title": "సేకరణ స్లాట్ బుక్ చేసుకోండి", "tabOpen": "బుకింగ్ కోసం అందుబాటులో ఉంది", "tabUpcoming": "రాబోయేవి", "tabClosed": "మూసివేయబడింది",
+    "slotsLeft": "{{count}} స్లాట్‌లు మిగిలి ఉన్నాయి", "full": "అన్ని స్లాట్‌లు నిండాయి", "bookBtn": "ఈ స్లాట్ బుక్ చేయండి",
+    "noSlots": "స్లాట్‌లు అందుబాటులో లేవు", "confirmedTitle": "బుకింగ్ నిర్ధారించబడింది", "bookingId": "బుకింగ్ ID", "token": "టోకెన్ నంబర్",
+    "cancelBtn": "బుకింగ్ రద్దు చేయండి"
+  },
+  "announcements": { "title": "ప్రకటనలు", "notificationsTitle": "నోటిఫికేషన్లు", "empty": "ఇంకా ప్రకటనలు లేవు." },
+  "dashboard": { "greeting": "స్వాగతం, {{name}}", "viewBooking": "బుకింగ్ చూడండి" }
+}

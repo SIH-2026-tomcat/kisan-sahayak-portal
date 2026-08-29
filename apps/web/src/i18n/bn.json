@@ -1,0 +1,30 @@
+{
+  "_note": "Starter Bengali translations from the spec copy bank plus machine translation. Needs native review before public release. Untranslated keys fall back to English.",
+  "brand": {
+    "name": "কিষান সহায়ক পোর্টাল",
+    "tagline": "আপনার কেন্দ্র জানুন। আপনার স্লট বুক করুন। আপনার পালা এলে আসুন।",
+    "govOfIndia": "ভারত সরকার",
+    "prototypeNote": "হ্যাকাথন মূল্যায়নের জন্য প্রোটোটাইপ। এটি সরকারি ভারত সরকারের পরিষেবা নয়।"
+  },
+  "nav": {
+    "home": "হোম", "about": "পোর্টাল সম্পর্কে", "schemes": "সরকারি প্রকল্প", "help": "সহায়তা ও সমর্থন",
+    "login": "লগ ইন করুন", "register": "নিবন্ধন করুন", "logout": "লগ আউট",
+    "dashboard": "হোম", "procurement": "সংগ্রহ", "book": "স্লট বুকিং", "myBookings": "আমার বুকিং",
+    "announcements": "ঘোষণা", "notifications": "বিজ্ঞপ্তি", "profile": "প্রোফাইল", "language": "ভাষা"
+  },
+  "common": {
+    "loading": "লোড হচ্ছে…", "retry": "আবার চেষ্টা করুন", "somethingWrong": "কিছু সমস্যা হয়েছে",
+    "save": "সংরক্ষণ করুন", "cancel": "বাতিল করুন", "continue": "চালিয়ে যান", "back": "পিছনে", "next": "পরবর্তী",
+    "viewOnMap": "মানচিত্রে দেখুন",
+    "serviceUnavailable": "পোর্টাল এই মুহূর্তে লাইভ স্লট তথ্য লোড করতে পারছে না। অনুগ্রহ করে কয়েক মিনিট পরে আবার চেষ্টা করুন।"
+  },
+  "home": { "heroCta1": "কৃষক হিসেবে নিবন্ধন করুন", "heroCta2": "লগ ইন করুন", "schemesTitle": "সরকারি প্রকল্প ও সচেতনতা" },
+  "booking": {
+    "title": "সংগ্রহের স্লট বুক করুন", "tabOpen": "বুকিংয়ের জন্য খোলা", "tabUpcoming": "আসন্ন", "tabClosed": "বন্ধ",
+    "slotsLeft": "{{count}}টি স্লট বাকি", "full": "সব স্লট পূর্ণ", "bookBtn": "এই স্লট বুক করুন",
+    "noSlots": "কোনও স্লট উপলব্ধ নেই", "confirmedTitle": "বুকিং নিশ্চিত হয়েছে", "bookingId": "বুকিং আইডি", "token": "টোকেন নম্বর",
+    "cancelBtn": "বুকিং বাতিল করুন"
+  },
+  "announcements": { "title": "ঘোষণা", "notificationsTitle": "বিজ্ঞপ্তি", "empty": "এখনও কোনও ঘোষণা নেই।" },
+  "dashboard": { "greeting": "স্বাগতম, {{name}}", "viewBooking": "বুকিং দেখুন" }
+}

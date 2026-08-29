@@ -1,46 +1,47 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import fp from "fastify-plugin";
+import type { FastifyPluginAsync } from "fastify";
+import crypto from "node:crypto";
+import { db, users } from "@kisan/db";
+import { eq } from "drizzle-orm";
 import { env } from "../config.js";
+import { provisionUser } from "../lib/auth.js";
 
-type NeonWebhookBody = {
-  event: string;
-  data?: Record<string, unknown>;
-};
+type NeonWebhookBody = { event?: string; type?: string; data?: Record<string, any> };
 
-const webhooksRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
+const webhooks: FastifyPluginAsync = async (app) => {
   app.post("/webhooks/neon", async (request, reply) => {
     const body = request.body as NeonWebhookBody;
-    request.log.info({ event: body.event, data: body.data }, "Neon auth webhook received");
+    const sig =
+      (request.headers["x-neon-auth-signature"] as string) ||
+      (request.headers["webhook-signature"] as string);
 
-    if (body.event === "send.otp" && body.data) {
-      const { phoneNumber, code, deliveryPreference } = body.data as {
-        phoneNumber?: string;
-        code?: string;
-        deliveryPreference?: string;
-      };
-
-      if (phoneNumber && code) {
-        // TODO: integrate real SMS provider
-        request.log.info(
-          { phoneNumber, code, deliveryPreference },
-          "OTP to be delivered (provider not configured - mock)"
-        );
+    // Best-effort HMAC check over the canonical JSON body when a secret is configured.
+    if (env.NEON_AUTH_WEBHOOK_SECRET) {
+      const expected = crypto
+        .createHmac("sha256", env.NEON_AUTH_WEBHOOK_SECRET)
+        .update(JSON.stringify(body))
+        .digest("hex");
+      const provided = (sig ?? "").replace(/^sha256=/, "");
+      if (provided !== expected) {
+        request.log.warn("neon webhook signature mismatch");
+        return reply.status(401).send({ error: "InvalidSignature" });
       }
     }
 
-    if (body.event === "user.created" && body.data) {
-      request.log.info({ user: body.data }, "Neon user created");
+    const event = body.event || body.type;
+    request.log.info({ event }, "neon auth webhook");
+
+    if ((event === "user.created" || event === "user.updated") && body.data) {
+      const u = body.data.user ?? body.data;
+      if (u?.id) {
+        await provisionUser({ id: u.id, email: u.email, name: u.name });
+        if (u.emailVerified) {
+          await db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.externalAuthId, u.id));
+        }
+      }
     }
 
     return reply.send({ received: true });
   });
-
-  app.get("/webhooks/neon/spec", async () => ({
-    endpoint: `${env.PUBLIC_API_URL}/webhooks/neon`,
-    method: "POST",
-    events: ["send.otp", "user.created", "phone_number.verified"],
-    note: "Signature verification not yet implemented. The handler will forward send.otp to the configured SMS provider once credentials are supplied.",
-  }));
 };
 
-export default fp(webhooksRoute, { name: "webhooks" });
+export default webhooks;
