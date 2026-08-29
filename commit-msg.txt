@@ -1,1 +1,0 @@
-Add Neon webhook endpoint and expose API URL in config.
