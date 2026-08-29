@@ -1,5 +1,4 @@
-import { config } from "dotenv";
-config({ path: "../../.env.local" });
+import "../src/load-env";
 
 import { db } from "../src/client";
 import {
@@ -100,14 +99,14 @@ async function seed() {
   // Demo farmer user
   const [demoFarmer] = await db
     .insert(users)
-    .values({
+    .values([{
       email: "farmer.demo@hawkvance.in",
       mobile: "+919876543210",
       role: "farmer",
       language: "en",
-      emailVerifiedAt: new Date().toISOString(),
-      mobileVerifiedAt: new Date().toISOString(),
-    })
+      emailVerifiedAt: new Date(),
+      mobileVerifiedAt: new Date(),
+    }])
     .returning();
 
   await db.insert(farmerProfiles).values({
